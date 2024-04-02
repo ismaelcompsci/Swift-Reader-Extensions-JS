@@ -23,7 +23,7 @@ export class GoodReads {
 
     const items = $("div.cell");
 
-    for (let i = 0; i < items.length; i++) {
+    for (let i = 0; i < items.slice(0, 5).length; i++) {
       const element = items[i];
       const list = $(element);
       const a = list.find("a");
@@ -39,7 +39,7 @@ export class GoodReads {
             id: href ?? String(number) ?? title.replace(" ", "_"),
             containsMoreItems: number > 100,
             title: title,
-            items: results.results.slice(0, 20),
+            items: results.results.slice(0, 15),
           });
 
           sectionCallback(updatedHomeSection);
