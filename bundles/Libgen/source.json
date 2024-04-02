@@ -1,0 +1,12 @@
+{
+  "id": "api.Libgen",
+  "name": "Libgen",
+  "info": "libgen scraper",
+  "websiteURL": "https://www.libgen.is/",
+  "version": "0.0.3",
+  "interfaces": {
+    "homePage": false,
+    "downloads": true,
+    "search": true
+  }
+}

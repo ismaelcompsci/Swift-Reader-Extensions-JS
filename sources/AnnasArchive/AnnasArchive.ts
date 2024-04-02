@@ -1,10 +1,10 @@
 import { CheerioAPI } from "cheerio/lib/load";
 import {
   SourceBook,
-  SourceInfo,
   PagedResults,
   PartialSourceBook,
   SearchRequest,
+  DownloadInfo,
 } from "../types";
 
 const AA_BASEURL = "https://annas-archive.org";
@@ -38,7 +38,7 @@ export class AnnasArchive {
 
     const author = $("div.italic").first().text().replace("🔍", "").trim();
 
-    const description = $("div.mt-4.line-clamp-[5].js-md5-top-box-description")
+    const description = $("div.js-md5-top-box-description")
       .first()
       .text()
       .replace("🔍", "")
@@ -46,10 +46,18 @@ export class AnnasArchive {
 
     const thumbnail = $("img").attr("src");
 
-    let downloadLinks: string[] = [];
-
     const dlLinksHTML = $("a.js-download-link");
+    const info = $("div.text-sm.text-gray-500").first().text();
 
+    let infoList = info.split(", ");
+    let language: string | undefined = undefined;
+    if (infoList[0].includes("[")) {
+      language = infoList.shift();
+    }
+    let extension = infoList.shift();
+    let size = infoList.shift();
+
+    let downloadLinks: DownloadInfo[] = [];
     dlLinksHTML.each((_, element) => {
       let link = $(element).attr("href");
 
@@ -57,8 +65,19 @@ export class AnnasArchive {
         return;
       }
 
-      if (link) {
-        downloadLinks.push(link);
+      if (
+        link &&
+        extension &&
+        (link.includes("ipfs.com") ||
+          link.includes("ipfs.io") ||
+          link.includes("ipfs"))
+      ) {
+        downloadLinks.push(
+          App.createDownloadInfo({
+            filetype: extension,
+            link: link,
+          }),
+        );
       }
     });
 

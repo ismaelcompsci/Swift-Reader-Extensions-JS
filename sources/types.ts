@@ -1,3 +1,8 @@
+export interface DownloadInfo {
+  link: string;
+  filetype: string;
+}
+
 export interface SourceInfo {
   readonly name: string;
   readonly description: string;
@@ -38,7 +43,7 @@ export interface BookInfo {
   desc?: string;
   image?: string;
   tags?: string[];
-  downloadLinks: string[];
+  downloadLinks: DownloadInfo[];
 }
 
 export interface SourceBook {
@@ -101,6 +106,15 @@ declare global {
 
 declare global {
   namespace App {
+    function createDownloadInfo(info: {
+      link: string;
+      filetype: string;
+    }): DownloadInfo;
+  }
+}
+
+declare global {
+  namespace App {
     function createRequestManager(info: {
       requestTimeout?: number;
     }): RequestManager;
@@ -115,7 +129,7 @@ declare global {
       desc?: string;
       image?: string;
       tags?: string[];
-      downloadLinks: string[];
+      downloadLinks: DownloadInfo[];
     }): BookInfo;
   }
 }

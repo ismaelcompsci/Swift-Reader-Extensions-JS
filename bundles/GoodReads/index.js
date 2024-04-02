@@ -59,7 +59,7 @@ var source = (() => {
           });
           const homeSection = App.createHomeSection({
             id: href ?? String(number) ?? title.replace(" ", "_"),
-            containsMoreItems: number > 100,
+            containsMoreItems: number > 20,
             title,
             items: []
           });

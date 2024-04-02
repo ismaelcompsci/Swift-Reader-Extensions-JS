@@ -42,17 +42,30 @@ var source = (() => {
       const $ = this.cheerio.load(response.data);
       const title = $("div.text-3xl.font-bold").first().text().replace("\u{1F50D}", "").trim();
       const author = $("div.italic").first().text().replace("\u{1F50D}", "").trim();
-      const description = $("div.mt-4.line-clamp-[5].js-md5-top-box-description").first().text().replace("\u{1F50D}", "").trim();
+      const description = $("div.js-md5-top-box-description").first().text().replace("\u{1F50D}", "").trim();
       const thumbnail = $("img").attr("src");
-      let downloadLinks = [];
       const dlLinksHTML = $("a.js-download-link");
+      const info = $("div.text-sm.text-gray-500").first().text();
+      let infoList = info.split(", ");
+      let language = void 0;
+      if (infoList[0].includes("[")) {
+        language = infoList.shift();
+      }
+      let extension = infoList.shift();
+      let size = infoList.shift();
+      let downloadLinks = [];
       dlLinksHTML.each((_, element) => {
         let link = $(element).attr("href");
         if (link === "/datasets" || link?.startsWith("/")) {
           return;
         }
-        if (link) {
-          downloadLinks.push(link);
+        if (link && extension && (link.includes("ipfs.com") || link.includes("ipfs.io") || link.includes("ipfs"))) {
+          downloadLinks.push(
+            App.createDownloadInfo({
+              filetype: extension,
+              link
+            })
+          );
         }
       });
       return App.createSourceBook({

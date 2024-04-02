@@ -1,7 +1,7 @@
-import axios from "axios";
-import { AnnasArchive } from "./AnnasArchive";
+import axios, { AxiosHeaders } from "axios";
 import cheerio from "cheerio";
-import { Request, Response } from "../types";
+import { Request, Response, SearchRequest } from "../types";
+import { Libgen } from "./libgen";
 
 // test mangger
 class RequestManager {
@@ -14,9 +14,15 @@ class RequestManager {
   async request(request: Request): Promise<Response> {
     let headers = request.headers;
 
+    const agent =
+      "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36";
+
     let response = await axios(`${request.url}${request.param ?? ""}`, {
       method: request.method,
-      headers: headers,
+      headers: {
+        ...headers,
+        "User-Agent": agent,
+      },
       timeout: this.requestTimeout || 0,
       responseType: "arraybuffer",
     });
@@ -25,18 +31,26 @@ class RequestManager {
       data: Buffer.from(response.data, "binary").toString(),
       status: response.status,
       headers: response.headers,
-      request: response.request,
+      request: request,
     };
 
     return responsePacked;
   }
 }
 // @ts-ignore
-const a = new AnnasArchive(cheerio);
+const a = new Libgen(cheerio);
 a.requestManager = new RequestManager();
 
 async function start() {
-  let res = await a.getBookDetails("edffb233eb60937c017d546b1a1ce241");
+  // let res = await a.getBookDetails("B86EB090DE1BAE4A1AB7FAD818DCC332");
+  //
+  const q: SearchRequest = {
+    title: "The l",
+    parameters: {},
+    includedTags: [],
+  };
+
+  let res = await a.getSearchResults(q, undefined);
 }
 
 start();
