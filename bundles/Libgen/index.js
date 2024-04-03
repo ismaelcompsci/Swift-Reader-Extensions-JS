@@ -52,8 +52,12 @@ var source = (() => {
       }).toArray();
       const promises = [];
       for (let link in links) {
+        var httpsLink = link;
+        if (link.startsWith("http:")) {
+          httpsLink = link.replace("http:", "https:");
+        }
         const request2 = App.createRequest({
-          url: links[link],
+          url: links[httpsLink],
           method: "GET"
         });
         promises.push(this.requestManager.request(request2));

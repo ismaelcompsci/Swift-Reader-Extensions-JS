@@ -48,8 +48,14 @@ export class Libgen {
 
     const promises: Promise<Response>[] = [];
     for (let link in links) {
+      var httpsLink = link;
+
+      if (link.startsWith("http:")) {
+        httpsLink = link.replace("http:", "https:");
+      }
+
       const request = App.createRequest({
-        url: links[link],
+        url: links[httpsLink],
         method: "GET",
       });
       promises.push(this.requestManager.request(request));
