@@ -47,13 +47,19 @@ export class Libgen {
       .toArray();
 
     const promises: Promise<Response>[] = [];
-    for (let link in links) {
+    links.forEach((link) => {
+      var httpsLink = link;
+
+      if (link[4] == ":") {
+        httpsLink = httpsLink.replace("http", "https");
+      }
+
       const request = App.createRequest({
-        url: links[link],
+        url: httpsLink,
         method: "GET",
       });
       promises.push(this.requestManager.request(request));
-    }
+    });
 
     const downloadMirrors = await Promise.all(promises);
 
