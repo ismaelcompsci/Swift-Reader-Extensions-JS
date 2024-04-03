@@ -47,20 +47,19 @@ export class Libgen {
       .toArray();
 
     const promises: Promise<Response>[] = [];
-    for (const link of links) {
+    links.forEach((link) => {
       var httpsLink = link;
 
       if (httpsLink.startsWith("http:")) {
         httpsLink = link.replace("http:", "https:");
       }
 
-      console.log({ httpsLink });
       const request = App.createRequest({
         url: httpsLink,
         method: "GET",
       });
       promises.push(this.requestManager.request(request));
-    }
+    });
 
     const downloadMirrors = await Promise.all(promises);
 
@@ -159,23 +158,3 @@ export class Libgen {
     });
   }
 }
-
-// // @ts-ignore
-// globalThis.App = new Proxy(
-//   {},
-//   {
-//     get(target, p) {
-//       // @ts-ignore
-//       if (target[p]) {
-//         // @ts-ignore
-//         return target[p];
-//       }
-
-//       if (typeof p === "string" && p.startsWith("create")) {
-//         return (anyProps: any) => anyProps;
-//       }
-
-//       return undefined;
-//     },
-//   },
-// );

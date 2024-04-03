@@ -51,18 +51,17 @@ var source = (() => {
         }
       }).toArray();
       const promises = [];
-      for (const link of links) {
+      links.forEach((link) => {
         var httpsLink = link;
         if (httpsLink.startsWith("http:")) {
           httpsLink = link.replace("http:", "https:");
         }
-        console.log({ httpsLink });
         const request2 = App.createRequest({
           url: httpsLink,
           method: "GET"
         });
         promises.push(this.requestManager.request(request2));
-      }
+      });
       const downloadMirrors = await Promise.all(promises);
       const downloadLinks = [];
       downloadMirrors.forEach((res) => {
@@ -142,19 +141,5 @@ var source = (() => {
       });
     }
   };
-  globalThis.App = new Proxy(
-    {},
-    {
-      get(target, p) {
-        if (target[p]) {
-          return target[p];
-        }
-        if (typeof p === "string" && p.startsWith("create")) {
-          return (anyProps) => anyProps;
-        }
-        return void 0;
-      }
-    }
-  );
   return __toCommonJS(Libgen_exports);
 })();
