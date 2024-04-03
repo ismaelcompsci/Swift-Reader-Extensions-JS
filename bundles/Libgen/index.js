@@ -51,17 +51,13 @@ var source = (() => {
         }
       }).toArray();
       const promises = [];
-      links.forEach((link) => {
-        var httpsLink = link;
-        if (httpsLink.startsWith("http:")) {
-          httpsLink = link.replace("http:", "https:");
-        }
+      for (let link in links) {
         const request2 = App.createRequest({
-          url: httpsLink,
+          url: links[link],
           method: "GET"
         });
         promises.push(this.requestManager.request(request2));
-      });
+      }
       const downloadMirrors = await Promise.all(promises);
       const downloadLinks = [];
       downloadMirrors.forEach((res) => {
