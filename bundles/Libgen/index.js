@@ -57,7 +57,7 @@ var source = (() => {
           httpsLink = link.replace("http:", "https:");
         }
         const request2 = App.createRequest({
-          url: links[httpsLink],
+          url: httpsLink,
           method: "GET"
         });
         promises.push(this.requestManager.request(request2));
