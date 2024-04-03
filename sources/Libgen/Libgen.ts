@@ -55,9 +55,10 @@ export class Libgen {
       }
 
       const request = App.createRequest({
-        url: links[httpsLink],
+        url: httpsLink,
         method: "GET",
       });
+
       promises.push(this.requestManager.request(request));
     }
 
