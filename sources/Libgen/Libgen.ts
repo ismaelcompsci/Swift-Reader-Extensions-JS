@@ -54,11 +54,11 @@ export class Libgen {
         httpsLink = link.replace("http:", "https:");
       }
 
+      console.log({ httpsLink });
       const request = App.createRequest({
         url: httpsLink,
         method: "GET",
       });
-
       promises.push(this.requestManager.request(request));
     }
 

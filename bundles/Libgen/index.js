@@ -51,11 +51,12 @@ var source = (() => {
         }
       }).toArray();
       const promises = [];
-      for (let link in links) {
+      for (const link of links) {
         var httpsLink = link;
-        if (link.startsWith("http:")) {
+        if (httpsLink.startsWith("http:")) {
           httpsLink = link.replace("http:", "https:");
         }
+        console.log({ httpsLink });
         const request2 = App.createRequest({
           url: httpsLink,
           method: "GET"
@@ -141,5 +142,19 @@ var source = (() => {
       });
     }
   };
+  globalThis.App = new Proxy(
+    {},
+    {
+      get(target, p) {
+        if (target[p]) {
+          return target[p];
+        }
+        if (typeof p === "string" && p.startsWith("create")) {
+          return (anyProps) => anyProps;
+        }
+        return void 0;
+      }
+    }
+  );
   return __toCommonJS(Libgen_exports);
 })();
