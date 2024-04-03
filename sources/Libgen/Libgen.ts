@@ -47,10 +47,10 @@ export class Libgen {
       .toArray();
 
     const promises: Promise<Response>[] = [];
-    for (let link in links) {
+    for (const link of links) {
       var httpsLink = link;
 
-      if (link.startsWith("http:")) {
+      if (httpsLink.startsWith("http:")) {
         httpsLink = link.replace("http:", "https:");
       }
 
@@ -159,3 +159,23 @@ export class Libgen {
     });
   }
 }
+
+// @ts-ignore
+globalThis.App = new Proxy(
+  {},
+  {
+    get(target, p) {
+      // @ts-ignore
+      if (target[p]) {
+        // @ts-ignore
+        return target[p];
+      }
+
+      if (typeof p === "string" && p.startsWith("create")) {
+        return (anyProps: any) => anyProps;
+      }
+
+      return undefined;
+    },
+  },
+);

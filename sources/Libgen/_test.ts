@@ -1,7 +1,7 @@
 import axios, { AxiosHeaders } from "axios";
 import cheerio from "cheerio";
 import { Request, Response, SearchRequest } from "../types";
-import { Libgen } from "./libgen";
+import { Libgen } from "./Libgen";
 
 // test mangger
 class RequestManager {
@@ -42,34 +42,34 @@ const a = new Libgen(cheerio);
 a.requestManager = new RequestManager();
 
 async function start() {
-  // let res = await a.getBookDetails("B86EB090DE1BAE4A1AB7FAD818DCC332");
-  //
-  const q: SearchRequest = {
-    title: "The l",
-    parameters: {},
-    includedTags: [],
-  };
+  let res = await a.getBookDetails("B86EB090DE1BAE4A1AB7FAD818DCC332");
+  console.log(res);
+  // const q: SearchRequest = {
+  //   title: "The l",
+  //   parameters: {},
+  //   includedTags: [],
+  // };
 
-  let res = await a.getSearchResults(q, undefined);
+  // let res = await a.getSearchResults(q, undefined);
 }
 
 start();
-// @ts-ignore
-globalThis.App = new Proxy(
-  {},
-  {
-    get(target, p) {
-      // @ts-ignore
-      if (target[p]) {
-        // @ts-ignore
-        return target[p];
-      }
+// // @ts-ignore
+// globalThis.App = new Proxy(
+//   {},
+//   {
+//     get(target, p) {
+//       // @ts-ignore
+//       if (target[p]) {
+//         // @ts-ignore
+//         return target[p];
+//       }
 
-      if (typeof p === "string" && p.startsWith("create")) {
-        return (anyProps: any) => anyProps;
-      }
+//       if (typeof p === "string" && p.startsWith("create")) {
+//         return (anyProps: any) => anyProps;
+//       }
 
-      return undefined;
-    },
-  },
-);
+//       return undefined;
+//     },
+//   },
+// );
