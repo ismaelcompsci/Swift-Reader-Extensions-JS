@@ -112,7 +112,7 @@ export class Libgen {
   ): Promise<PagedResults> {
     const page = metadata?.page ?? 1;
     const request = App.createRequest({
-      url: `${BASEURL}/search.php?req=${query.title}&open=0&res=25&view=detailed&phrase=1&column=def&page=${page}`,
+      url: `${BASEURL}/search.php?req=${query.title ?? ""}&open=0&res=25&view=detailed&phrase=1&column=def&page=${page}`,
       method: "GET",
     });
 

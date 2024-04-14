@@ -81,7 +81,7 @@ var source = (() => {
     }
     async getSearchResults(query, metadata) {
       const request = App.createRequest({
-        url: `${AA_BASEURL}/search?q=${query.title}`,
+        url: `${AA_BASEURL}/search?q=${query.title ?? ""}`,
         method: "GET"
       });
       const response = await this.requestManager.request(request);

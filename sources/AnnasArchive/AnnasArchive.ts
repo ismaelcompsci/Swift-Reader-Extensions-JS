@@ -98,7 +98,7 @@ export class AnnasArchive {
     metadata: any,
   ): Promise<PagedResults> {
     const request = App.createRequest({
-      url: `${AA_BASEURL}/search?q=${query.title}`,
+      url: `${AA_BASEURL}/search?q=${query.title ?? ""}`,
       method: "GET",
     });
 
