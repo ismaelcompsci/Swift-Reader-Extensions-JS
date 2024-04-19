@@ -25,7 +25,7 @@ class RequestManager {
       data: Buffer.from(response.data, "binary").toString(),
       status: response.status,
       headers: response.headers,
-      request: response.request,
+      request: request,
     };
 
     return responsePacked;
@@ -36,26 +36,27 @@ const a = new AnnasArchive(cheerio);
 a.requestManager = new RequestManager();
 
 async function start() {
-  let res = await a.getBookDetails("edffb233eb60937c017d546b1a1ce241");
+  let res = await a.getBookDetails("f1671f69c759d32e8bcb240cffe90738");
+  console.log(res.bookInfo.downloadLinks);
 }
 
 start();
 // @ts-ignore
-globalThis.App = new Proxy(
-  {},
-  {
-    get(target, p) {
-      // @ts-ignore
-      if (target[p]) {
-        // @ts-ignore
-        return target[p];
-      }
+// globalThis.App = new Proxy(
+//   {},
+//   {
+//     get(target, p) {
+//       // @ts-ignore
+//       if (target[p]) {
+//         // @ts-ignore
+//         return target[p];
+//       }
 
-      if (typeof p === "string" && p.startsWith("create")) {
-        return (anyProps: any) => anyProps;
-      }
+//       if (typeof p === "string" && p.startsWith("create")) {
+//         return (anyProps: any) => anyProps;
+//       }
 
-      return undefined;
-    },
-  },
-);
+//       return undefined;
+//     },
+//   },
+// );

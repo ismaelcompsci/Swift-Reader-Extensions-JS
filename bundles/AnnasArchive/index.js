@@ -54,6 +54,7 @@ var source = (() => {
       let extension = infoList.shift();
       let size = infoList.shift();
       let downloadLinks = [];
+      let libgenDownloadLinks = [];
       dlLinksHTML.each((_, element) => {
         let link = $(element).attr("href");
         if (link === "/datasets" || link?.startsWith("/")) {
@@ -66,6 +67,52 @@ var source = (() => {
               link
             })
           );
+        }
+        if (link && (link?.includes("libgen") || link?.includes("library.lol"))) {
+          libgenDownloadLinks.push(link);
+        }
+      });
+      const promises = [];
+      libgenDownloadLinks.forEach((link) => {
+        var httpsLink = link;
+        if (link[4] == ":") {
+          httpsLink = httpsLink.replace("http", "https");
+        }
+        const request2 = App.createRequest({
+          url: httpsLink,
+          method: "GET"
+        });
+        let p = this.requestManager.request(request2);
+        promises.push(p);
+      });
+      const downloadMirrors = await Promise.all(promises);
+      downloadMirrors.forEach((res) => {
+        console.log("REQUEST", res.request.url);
+        const isLibgenLi = res.request.url.includes("libgen.li");
+        const isLibraryLOL = res.request.url.includes("library.lol");
+        const $2 = this.cheerio.load(res.data);
+        const ext = res.request.url.split(".").pop();
+        if (isLibraryLOL) {
+          const aHref = $2("h2 > a").first().attr("href");
+          if (aHref) {
+            downloadLinks.push(
+              App.createDownloadInfo({
+                filetype: extension ?? ext ?? "",
+                link: aHref
+              })
+            );
+          }
+        }
+        if (isLibgenLi) {
+          const aHref = $2("a > h2").parent().first().attr("href");
+          if (aHref) {
+            downloadLinks.push(
+              App.createDownloadInfo({
+                filetype: extension ?? ext ?? "",
+                link: `https://libgen.li/${aHref}`
+              })
+            );
+          }
         }
       });
       return App.createSourceBook({
@@ -81,7 +128,7 @@ var source = (() => {
     }
     async getSearchResults(query, metadata) {
       const request = App.createRequest({
-        url: `${AA_BASEURL}/search?q=${query.title ?? ""}`,
+        url: `${AA_BASEURL}/search?q=${query?.title ?? ""}`,
         method: "GET"
       });
       const response = await this.requestManager.request(request);

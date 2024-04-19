@@ -4,6 +4,7 @@ import {
   PagedResults,
   PartialSourceBook,
   SearchRequest,
+  Response,
   DownloadInfo,
 } from "../types";
 
@@ -58,6 +59,8 @@ export class AnnasArchive {
     let size = infoList.shift();
 
     let downloadLinks: DownloadInfo[] = [];
+    let libgenDownloadLinks: string[] = [];
+
     dlLinksHTML.each((_, element) => {
       let link = $(element).attr("href");
 
@@ -79,6 +82,61 @@ export class AnnasArchive {
           }),
         );
       }
+
+      if (link && (link?.includes("libgen") || link?.includes("library.lol"))) {
+        libgenDownloadLinks.push(link);
+      }
+    });
+
+    const promises: Promise<Response>[] = [];
+    libgenDownloadLinks.forEach((link) => {
+      var httpsLink = link;
+
+      if (link[4] == ":") {
+        httpsLink = httpsLink.replace("http", "https");
+      }
+
+      const request = App.createRequest({
+        url: httpsLink,
+        method: "GET",
+      });
+
+      let p = this.requestManager.request(request);
+      promises.push(p);
+    });
+
+    const downloadMirrors = await Promise.all(promises);
+
+    downloadMirrors.forEach((res) => {
+      console.log("REQUEST", res.request.url);
+      const isLibgenLi = res.request.url.includes("libgen.li");
+      const isLibraryLOL = res.request.url.includes("library.lol");
+      const $ = this.cheerio.load(res.data as string);
+      const ext = res.request.url.split(".").pop();
+
+      if (isLibraryLOL) {
+        const aHref = $("h2 > a").first().attr("href");
+        if (aHref) {
+          downloadLinks.push(
+            App.createDownloadInfo({
+              filetype: extension ?? ext ?? "",
+              link: aHref,
+            }),
+          );
+        }
+      }
+
+      if (isLibgenLi) {
+        const aHref = $("a > h2").parent().first().attr("href");
+        if (aHref) {
+          downloadLinks.push(
+            App.createDownloadInfo({
+              filetype: extension ?? ext ?? "",
+              link: `https://libgen.li/${aHref}`,
+            }),
+          );
+        }
+      }
     });
 
     return App.createSourceBook({
@@ -98,7 +156,7 @@ export class AnnasArchive {
     metadata: any,
   ): Promise<PagedResults> {
     const request = App.createRequest({
-      url: `${AA_BASEURL}/search?q=${query.title ?? ""}`,
+      url: `${AA_BASEURL}/search?q=${query?.title ?? ""}`,
       method: "GET",
     });
 
