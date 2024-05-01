@@ -23,7 +23,7 @@ export class GoodReads {
 
     const items = $("div.cell");
 
-    for (let i = 0; i < items.slice(0, 5).length; i++) {
+    for (let i = 0; i < items.slice(0, 4).length; i++) {
       const element = items[i];
       const list = $(element);
       const a = list.find("a");
@@ -37,9 +37,9 @@ export class GoodReads {
         this.getViewMoreItems(href, undefined).then((results) => {
           const updatedHomeSection = App.createHomeSection({
             id: href ?? String(number) ?? title.replace(" ", "_"),
-            containsMoreItems: number > 100,
+            containsMoreItems: number > 99,
             title: title,
-            items: results.results.slice(0, 15),
+            items: results.results,
           });
 
           sectionCallback(updatedHomeSection);
@@ -51,7 +51,6 @@ export class GoodReads {
           title: title,
           items: [],
         });
-
         sectionCallback(homeSection);
       }
     }
@@ -109,24 +108,3 @@ export class GoodReads {
     });
   }
 }
-
-// delete before build
-// @ts-ignore
-// globalThis.App = new Proxy(
-//   {},
-//   {
-//     get(target, p) {
-//       // @ts-ignore
-//       if (target[p]) {
-//         // @ts-ignore
-//         return target[p];
-//       }
-
-//       if (typeof p === "string" && p.startsWith("create")) {
-//         return (anyProps: any) => anyProps;
-//       }
-
-//       return undefined;
-//     },
-//   },
-// );

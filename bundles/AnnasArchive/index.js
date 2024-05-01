@@ -87,7 +87,6 @@ var source = (() => {
       });
       const downloadMirrors = await Promise.all(promises);
       downloadMirrors.forEach((res) => {
-        console.log("REQUEST", res.request.url);
         const isLibgenLi = res.request.url.includes("libgen.li");
         const isLibraryLOL = res.request.url.includes("library.lol");
         const $2 = this.cheerio.load(res.data);

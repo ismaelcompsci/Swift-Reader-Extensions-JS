@@ -38,7 +38,7 @@ var source = (() => {
       const response = await this.requestManager.request(request);
       const $ = this.cheerio.load(response.data);
       const items = $("div.cell");
-      for (let i = 0; i < items.slice(0, 5).length; i++) {
+      for (let i = 0; i < items.slice(0, 4).length; i++) {
         const element = items[i];
         const list = $(element);
         const a = list.find("a");
@@ -51,9 +51,9 @@ var source = (() => {
           this.getViewMoreItems(href, void 0).then((results) => {
             const updatedHomeSection = App.createHomeSection({
               id: href ?? String(number) ?? title.replace(" ", "_"),
-              containsMoreItems: number > 100,
+              containsMoreItems: number > 99,
               title,
-              items: results.results.slice(0, 15)
+              items: results.results
             });
             sectionCallback(updatedHomeSection);
           });

@@ -1,0 +1,12 @@
+{
+  "id": "api.ZLibrary",
+  "name": "ZLibrary",
+  "info": "ZLibrary scraper",
+  "websiteURL": "https://z-library.se/",
+  "version": "0.0.4",
+  "interfaces": {
+    "homePage": true,
+    "downloads": false,
+    "search": true
+  }
+}

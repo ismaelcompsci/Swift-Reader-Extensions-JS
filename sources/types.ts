@@ -1,3 +1,7 @@
+export interface SourceInterceptor {
+  interceptRequest(request: Request): Promise<Request>;
+}
+
 export interface DownloadInfo {
   link: string;
   filetype: string;
@@ -11,6 +15,8 @@ export interface SourceInfo {
 
 export interface RequestManager {
   readonly requestTimeout: number;
+  readonly interceptor?: SourceInterceptor;
+
   request(request: Request): Promise<Response>;
 }
 
@@ -83,6 +89,18 @@ export interface HomeSection {
   items: PartialSourceBook[];
   containsMoreItems: boolean;
 }
+
+export interface SourceStateManager {
+  store(key: string, value: any): Promise<void>;
+  retrieve(key: string): Promise<any>;
+}
+
+declare global {
+  namespace App {
+    function createSourceStateManager(): SourceStateManager;
+  }
+}
+
 declare global {
   namespace App {
     function createHomeSection(info: {
@@ -117,6 +135,7 @@ declare global {
   namespace App {
     function createRequestManager(info: {
       requestTimeout?: number;
+      interceptor?: SourceInterceptor;
     }): RequestManager;
   }
 }

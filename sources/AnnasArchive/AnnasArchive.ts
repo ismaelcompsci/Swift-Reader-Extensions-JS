@@ -108,7 +108,6 @@ export class AnnasArchive {
     const downloadMirrors = await Promise.all(promises);
 
     downloadMirrors.forEach((res) => {
-      console.log("REQUEST", res.request.url);
       const isLibgenLi = res.request.url.includes("libgen.li");
       const isLibraryLOL = res.request.url.includes("library.lol");
       const $ = this.cheerio.load(res.data as string);
@@ -161,7 +160,6 @@ export class AnnasArchive {
     });
 
     const response = await this.requestManager.request(request);
-
     const $ = this.cheerio.load(response.data as string);
     const books: PartialSourceBook[] = [];
 

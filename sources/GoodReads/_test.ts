@@ -49,21 +49,21 @@ t();
 
 // delete before build
 // @ts-ignore
-globalThis.App = new Proxy(
-  {},
-  {
-    get(target, p) {
-      // @ts-ignore
-      if (target[p]) {
-        // @ts-ignore
-        return target[p];
-      }
+// globalThis.App = new Proxy(
+//   {},
+//   {
+//     get(target, p) {
+//       // @ts-ignore
+//       if (target[p]) {
+//         // @ts-ignore
+//         return target[p];
+//       }
 
-      if (typeof p === "string" && p.startsWith("create")) {
-        return (anyProps: any) => anyProps;
-      }
+//       if (typeof p === "string" && p.startsWith("create")) {
+//         return (anyProps: any) => anyProps;
+//       }
 
-      return undefined;
-    },
-  },
-);
+//       return undefined;
+//     },
+//   },
+// );
