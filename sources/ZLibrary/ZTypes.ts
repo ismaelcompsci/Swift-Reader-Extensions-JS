@@ -1,3 +1,20 @@
+export interface LoginResponse {
+  success: number;
+  user: User;
+}
+
+export interface User {
+  id: number;
+  email: string;
+  name: string;
+  kindle_email: string;
+  remix_userkey: string;
+  downloads_today: number;
+  downloads_limit: number;
+  confirmed: number;
+  isPremium: number;
+}
+
 export interface MostPopularResponse {
   success: number;
   books: ZLibraryBook[];

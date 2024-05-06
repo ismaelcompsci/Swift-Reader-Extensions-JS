@@ -6,12 +6,17 @@ import {
   SearchRequest,
   SourceBook,
   Request,
+  SourceStateManager,
+  RequestManager,
 } from "../types";
 import {
+  LoginResponse,
   MostPopularResponse,
   SearchResponse,
   ZLibraryBookInfoResponse,
 } from "./ZTypes";
+import { UISection } from "../uitypes";
+import { accountSettings, getAccessToken } from "./Setttings";
 
 enum FileExtension {
   TXT = "TXT",
@@ -49,14 +54,32 @@ export class ZLibrary {
     requestTimeout: 10_000,
     interceptor: {
       interceptRequest: async (request: Request) => {
-        console.log("INTERCEPTING REQUEST");
-        var valueFromState = this.stateManager.retrieve("test");
-        if (!valueFromState) return request;
+        const accountTokens = await getAccessToken(this.stateManager);
+
+        if (!accountTokens) {
+          return request;
+        }
+
+        request.headers = {
+          ...request.headers,
+          Cookies: `remix_userid=${accountTokens.remixUserid};remix_userkey=${accountTokens.remixUserkey}`,
+        };
 
         return request;
       },
     },
   });
+
+  async getSourceMenu(): Promise<UISection> {
+    return App.createUISection({
+      id: "source_settings",
+      isHidden: false,
+      title: "Source Settings",
+      rows: async () => [
+        ...(await accountSettings(this.requestManager, this.stateManager)),
+      ],
+    });
+  }
 
   async getBookDetails(id: string): Promise<SourceBook> {
     const request = App.createRequest({
@@ -65,9 +88,10 @@ export class ZLibrary {
     });
 
     const response = await this.requestManager.request(request);
-    const data = JSON.parse(
-      response.data ?? "{}",
-    ) as unknown as ZLibraryBookInfoResponse;
+    const data: ZLibraryBookInfoResponse =
+      typeof response.data === "string"
+        ? JSON.parse(response.data)
+        : response.data;
 
     // NEEDS AUTH
     // const fileRequest = App.createRequest({

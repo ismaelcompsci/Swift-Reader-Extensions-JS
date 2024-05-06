@@ -13,46 +13,57 @@ export class GoodReads {
   async getHomePageSections(
     sectionCallback: (section: HomeSection) => void,
   ): Promise<void> {
-    const request = App.createRequest({
-      url: `${GOOD_READS}/list`,
-      method: "GET",
-    });
+    const sections = [
+      App.createHomeSection({
+        id: "list/show/1230.Best_Gothic_Books_Of_All_Time",
+        title: "Best Gothic Books Of All Time",
+        containsMoreItems: true,
+      }),
 
-    const response = await this.requestManager.request(request);
-    const $ = this.cheerio.load(response.data as string);
+      App.createHomeSection({
+        id: "list/show/143500.Best_Books_of_the_Decade_2020_s",
+        title: "Best Books of the Decade: 2020's",
+        containsMoreItems: true,
+      }),
 
-    const items = $("div.cell");
+      App.createHomeSection({
+        id: "list/show/194434.Goodreads_Reading_Challenge_Favs_From_Over_the_Years_to_the_Current_Challenge",
+        title: "Goodreads Reading Challenge",
+        containsMoreItems: true,
+      }),
 
-    for (let i = 0; i < items.slice(0, 4).length; i++) {
-      const element = items[i];
-      const list = $(element);
-      const a = list.find("a");
-      const title = a.text();
-      const href = a.attr("href")?.slice(1);
-      const booksInfo = list.find("div.listFullDetails").text().trim();
-      const numberOfBooks = booksInfo.split(" ");
-      const number = parseInt(numberOfBooks[0].replace(",", ""));
+      App.createHomeSection({
+        id: "list/show/201200.The_top_100_classics_according_to_active_members_of_Catching_up_on_Classics_group",
+        title: "The top 100 classics",
+        containsMoreItems: true,
+      }),
 
-      if (href) {
-        this.getViewMoreItems(href, undefined).then((results) => {
-          const updatedHomeSection = App.createHomeSection({
-            id: href ?? String(number) ?? title.replace(" ", "_"),
-            containsMoreItems: number > 99,
-            title: title,
-            items: results.results,
-          });
+      App.createHomeSection({
+        id: "list/show/264.Books_That_Everyone_Should_Read_At_Least_Once",
+        title: "Books That Everyone Should Read At Least Once",
+        containsMoreItems: true,
+      }),
+    ];
 
-          sectionCallback(updatedHomeSection);
-        });
+    const promises: Promise<void>[] = [];
 
-        const homeSection = App.createHomeSection({
-          id: href ?? String(number) ?? title.replace(" ", "_"),
-          containsMoreItems: number > 20,
-          title: title,
-          items: [],
-        });
-        sectionCallback(homeSection);
-      }
+    for (const section of sections) {
+      sectionCallback(section);
+
+      const request = App.createRequest({
+        url: `${GOOD_READS}${section.id}`,
+        method: "GET",
+      });
+
+      promises.push(
+        this.requestManager.request(request).then((response) => {
+          const $ = this.cheerio.load(response.data as string);
+          const items = parseGoodReadsList($);
+
+          section.items = items;
+          sectionCallback(section);
+        }),
+      );
     }
   }
 
@@ -69,38 +80,7 @@ export class GoodReads {
     const response = await this.requestManager.request(request);
     const $ = this.cheerio.load(response.data as string);
 
-    const table = $("table.tableList");
-    const tableRows = $(table).find(
-      'tr[itemscope][itemtype="http://schema.org/Book"]',
-    );
-
-    const items: PartialSourceBook[] = [];
-
-    tableRows.each((_, element) => {
-      const row = $(element);
-      const tD = row.find('td[width="100%"][valign="top"]');
-      const tDImage = row.find('td[width="5%"][valign="top"]');
-      const aTag = tD.find("a");
-      const link = aTag.attr("href");
-      const image = tDImage.find("img").attr("src");
-      const title = aTag
-        .find('span[itemprop="name"][role="heading"][aria-level="4"]')
-        .text();
-      const author = tD.find("a.authorName").text();
-
-      if (!link) {
-        return;
-      }
-
-      const book = App.createPartialSourceBook({
-        id: link,
-        title: title,
-        author: author,
-        image: image,
-      });
-
-      items.push(book);
-    });
+    const items = parseGoodReadsList($);
 
     return App.createPagedResults({
       metadata: { page: page + 1 },
@@ -108,3 +88,40 @@ export class GoodReads {
     });
   }
 }
+
+const parseGoodReadsList = ($: CheerioAPI): PartialSourceBook[] => {
+  const table = $("table.tableList");
+  const tableRows = $(table).find(
+    'tr[itemscope][itemtype="http://schema.org/Book"]',
+  );
+
+  const items: PartialSourceBook[] = [];
+
+  tableRows.each((_, element) => {
+    const row = $(element);
+    const tD = row.find('td[width="100%"][valign="top"]');
+    const tDImage = row.find('td[width="5%"][valign="top"]');
+    const aTag = tD.find("a");
+    const link = aTag.attr("href");
+    const image = tDImage.find("img").attr("src");
+    const title = aTag
+      .find('span[itemprop="name"][role="heading"][aria-level="4"]')
+      .text();
+    const author = tD.find("a.authorName").text();
+
+    if (!link) {
+      return;
+    }
+
+    const book = App.createPartialSourceBook({
+      id: link,
+      title: title,
+      author: author,
+      image: image,
+    });
+
+    items.push(book);
+  });
+
+  return items;
+};

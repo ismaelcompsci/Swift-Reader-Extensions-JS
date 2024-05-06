@@ -89,8 +89,14 @@ export interface HomeSection {
   items: PartialSourceBook[];
   containsMoreItems: boolean;
 }
+export interface SecureStateManager {
+  store(key: string, value: any): Promise<void>;
+  retrieve(key: string): Promise<any>;
+}
 
 export interface SourceStateManager {
+  readonly keychain: SecureStateManager;
+
   store(key: string, value: any): Promise<void>;
   retrieve(key: string): Promise<any>;
 }
