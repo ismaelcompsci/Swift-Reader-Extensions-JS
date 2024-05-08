@@ -43,11 +43,6 @@ var source = (() => {
           containsMoreItems: true
         }),
         App.createHomeSection({
-          id: "list/show/194434.Goodreads_Reading_Challenge_Favs_From_Over_the_Years_to_the_Current_Challenge",
-          title: "Goodreads Reading Challenge",
-          containsMoreItems: true
-        }),
-        App.createHomeSection({
           id: "list/show/201200.The_top_100_classics_according_to_active_members_of_Catching_up_on_Classics_group",
           title: "The top 100 classics",
           containsMoreItems: true

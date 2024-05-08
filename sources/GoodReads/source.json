@@ -3,7 +3,7 @@
   "name": "GoodReads",
   "info": "GoodReads scraper",
   "websiteURL": "https://www.goodreads.com/",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "interfaces": {
     "homePage": true,
     "downloads": false,
