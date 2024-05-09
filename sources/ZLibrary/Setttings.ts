@@ -88,42 +88,6 @@ export async function accountSettings(
             await login(requestManager, stateManager, values as Credentials),
         }),
       }),
-
-      App.createUINavigationButton({
-        id: "register_page",
-        label: "Register",
-        form: App.createUIForm({
-          // @ts-ignore
-          id: "register_form_itme",
-          sections: async () => [
-            App.createUISection({
-              id: "register_form",
-              isHidden: false,
-              title: "Register Form",
-              rows: async () => [
-                App.createUIInputField({
-                  id: "email",
-                  label: "Email",
-                  value: "",
-                }),
-
-                App.createUIInputField({
-                  id: "username",
-                  label: "Username",
-                  value: "",
-                }),
-
-                App.createUIInputField({
-                  id: "password",
-                  label: "Password",
-                  value: "",
-                }),
-              ],
-            }),
-          ],
-          onSubmit: async (values) => {},
-        }),
-      }),
     ];
   }
 
