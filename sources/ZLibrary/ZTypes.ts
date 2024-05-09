@@ -1,3 +1,16 @@
+export interface DownloadInfoResponse {
+  success: number;
+  file: DownloadInfo;
+}
+
+export interface DownloadInfo {
+  downloadLink: string;
+  description: string;
+  author: string;
+  extension: string;
+  allowDownload: boolean;
+}
+
 export interface LoginResponse {
   success: number;
   user: User;

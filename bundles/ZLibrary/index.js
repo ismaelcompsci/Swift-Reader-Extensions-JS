@@ -193,13 +193,23 @@ downloads today: ${json.user.downloads_today}`
       });
       const response = await this.requestManager.request(request);
       const data = typeof response.data === "string" ? JSON.parse(response.data) : response.data;
+      const fileRequest = App.createRequest({
+        url: `${this.BASE_URL}${id}/file`,
+        method: "GET"
+      });
+      const fileResponse = await this.requestManager.request(fileRequest);
+      const fileInfo = typeof fileResponse.data === "string" ? JSON.parse(fileResponse.data) : fileResponse.data;
+      const downloadLink = App.createDownloadInfo({
+        link: fileInfo.file.downloadLink,
+        filetype: fileInfo.file.extension
+      });
       return App.createSourceBook({
         id,
         bookInfo: App.createBookInfo({
           title: data.book.title,
           author: data.book.author,
           image: data.book.cover,
-          downloadLinks: [],
+          downloadLinks: [downloadLink],
           desc: data.book.description
         })
       });

@@ -10,6 +10,7 @@ import {
   RequestManager,
 } from "../types";
 import {
+  DownloadInfoResponse,
   LoginResponse,
   MostPopularResponse,
   SearchResponse,
@@ -94,12 +95,21 @@ export class ZLibrary {
         : response.data;
 
     // NEEDS AUTH
-    // const fileRequest = App.createRequest({
-    //   url: `${this.BASE_URL}${id}/file`,
-    //   method: "GET",
-    // });
+    const fileRequest = App.createRequest({
+      url: `${this.BASE_URL}${id}/file`,
+      method: "GET",
+    });
 
-    // const fileResponse = await this.requestManager.request(fileRequest);
+    const fileResponse = await this.requestManager.request(fileRequest);
+    const fileInfo: DownloadInfoResponse =
+      typeof fileResponse.data === "string"
+        ? JSON.parse(fileResponse.data)
+        : fileResponse.data;
+
+    const downloadLink = App.createDownloadInfo({
+      link: fileInfo.file.downloadLink,
+      filetype: fileInfo.file.extension,
+    });
 
     return App.createSourceBook({
       id: id,
@@ -107,7 +117,7 @@ export class ZLibrary {
         title: data.book.title,
         author: data.book.author,
         image: data.book.cover,
-        downloadLinks: [],
+        downloadLinks: [downloadLink],
         desc: data.book.description,
       }),
     });

@@ -63,8 +63,7 @@ var source = (() => {
         promises.push(
           this.requestManager.request(request).then((response) => {
             const $ = this.cheerio.load(response.data);
-            const items = parseGoodReadsList($);
-            section.items = items;
+            section.items = parseGoodReadsList($, true);
             sectionCallback(section);
           })
         );
@@ -78,20 +77,21 @@ var source = (() => {
       });
       const response = await this.requestManager.request(request);
       const $ = this.cheerio.load(response.data);
-      const items = parseGoodReadsList($);
+      const items = parseGoodReadsList($, false);
       return App.createPagedResults({
         metadata: { page: page + 1 },
         results: items
       });
     }
   };
-  var parseGoodReadsList = ($) => {
-    const table = $("table.tableList");
-    const tableRows = $(table).find(
-      'tr[itemscope][itemtype="http://schema.org/Book"]'
-    );
+  var parseGoodReadsList = ($, isHomePageSection) => {
     const items = [];
-    tableRows.each((_, element) => {
+    const tableRows = $(
+      "table.tableList tr[itemscope][itemtype='http://schema.org/Book']"
+    );
+    let tableRowCount = isHomePageSection ? Math.min(tableRows.length, 25) : tableRows.length;
+    for (let i = 0; i < tableRowCount - 1; i++) {
+      const element = tableRows[i];
       const row = $(element);
       const tD = row.find('td[width="100%"][valign="top"]');
       const tDImage = row.find('td[width="5%"][valign="top"]');
@@ -101,7 +101,7 @@ var source = (() => {
       const title = aTag.find('span[itemprop="name"][role="heading"][aria-level="4"]').text();
       const author = tD.find("a.authorName").text();
       if (!link) {
-        return;
+        continue;
       }
       const book = App.createPartialSourceBook({
         id: link,
@@ -110,7 +110,7 @@ var source = (() => {
         image
       });
       items.push(book);
-    });
+    }
     return items;
   };
   return __toCommonJS(GoodReads_exports);

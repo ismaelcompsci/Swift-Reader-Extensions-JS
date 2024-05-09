@@ -51,10 +51,10 @@ export class GoodReads {
 
       promises.push(
         this.requestManager.request(request).then((response) => {
+          // this is the bottleneck alot of html being parsed
           const $ = this.cheerio.load(response.data as string);
-          const items = parseGoodReadsList($);
 
-          section.items = items;
+          section.items = parseGoodReadsList($, true);
           sectionCallback(section);
         }),
       );
@@ -74,7 +74,7 @@ export class GoodReads {
     const response = await this.requestManager.request(request);
     const $ = this.cheerio.load(response.data as string);
 
-    const items = parseGoodReadsList($);
+    const items = parseGoodReadsList($, false);
 
     return App.createPagedResults({
       metadata: { page: page + 1 },
@@ -83,18 +83,26 @@ export class GoodReads {
   }
 }
 
-const parseGoodReadsList = ($: CheerioAPI): PartialSourceBook[] => {
-  const table = $("table.tableList");
-  const tableRows = $(table).find(
-    'tr[itemscope][itemtype="http://schema.org/Book"]',
+const parseGoodReadsList = (
+  $: CheerioAPI,
+  isHomePageSection: boolean,
+): PartialSourceBook[] => {
+  const items: PartialSourceBook[] = [];
+  const tableRows = $(
+    "table.tableList tr[itemscope][itemtype='http://schema.org/Book']",
   );
 
-  const items: PartialSourceBook[] = [];
+  let tableRowCount = isHomePageSection
+    ? Math.min(tableRows.length, 25)
+    : tableRows.length;
 
-  tableRows.each((_, element) => {
+  for (let i = 0; i < tableRowCount - 1; i++) {
+    const element = tableRows[i];
+
     const row = $(element);
     const tD = row.find('td[width="100%"][valign="top"]');
     const tDImage = row.find('td[width="5%"][valign="top"]');
+
     const aTag = tD.find("a");
     const link = aTag.attr("href");
     const image = tDImage.find("img").attr("src");
@@ -104,7 +112,7 @@ const parseGoodReadsList = ($: CheerioAPI): PartialSourceBook[] => {
     const author = tD.find("a.authorName").text();
 
     if (!link) {
-      return;
+      continue;
     }
 
     const book = App.createPartialSourceBook({
@@ -115,7 +123,7 @@ const parseGoodReadsList = ($: CheerioAPI): PartialSourceBook[] => {
     });
 
     items.push(book);
-  });
+  }
 
   return items;
 };
