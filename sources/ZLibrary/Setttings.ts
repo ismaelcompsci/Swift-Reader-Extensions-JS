@@ -88,6 +88,12 @@ export async function accountSettings(
             await login(requestManager, stateManager, values as Credentials),
         }),
       }),
+
+      App.createUILink({
+        id: "register_link",
+        label: "Register",
+        value: "https://singlelogin.se/registration",
+      }),
     ];
   }
 

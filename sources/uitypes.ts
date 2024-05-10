@@ -2,6 +2,7 @@ export interface AnyUI {
   id: string;
 }
 
+export type UILink = AnyUI;
 export type UINavigationButton = AnyUI;
 export type UIInputField = AnyUI;
 export type UIMultilineLabel = AnyUI;
@@ -14,6 +15,16 @@ export interface UISection {
 export interface UIForm {
   onSubmit(values: Record<any, any>): Promise<void> | undefined;
   sections(): Promise<UISection[]>;
+}
+
+declare global {
+  namespace App {
+    function createUILink(info: {
+      id: string;
+      label: string;
+      value?: string;
+    }): UILink;
+  }
 }
 
 declare global {

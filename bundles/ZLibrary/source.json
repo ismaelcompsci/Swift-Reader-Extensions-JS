@@ -3,7 +3,7 @@
   "name": "ZLibrary",
   "info": "ZLibrary scraper",
   "websiteURL": "https://z-library.se/",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "interfaces": {
     "homePage": true,
     "downloads": false,

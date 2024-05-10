@@ -83,6 +83,11 @@ var source = (() => {
             ],
             onSubmit: async (values) => await login(requestManager, stateManager, values)
           })
+        }),
+        App.createUILink({
+          id: "register_link",
+          label: "Register",
+          value: "https://singlelogin.se/registration"
         })
       ];
     }

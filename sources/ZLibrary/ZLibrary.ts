@@ -17,7 +17,7 @@ import {
   ZLibraryBookInfoResponse,
 } from "./ZTypes";
 import { UISection } from "../uitypes";
-import { accountSettings, getAccessToken } from "./Setttings";
+import { accountSettings, getAccessToken, getRegisterLink } from "./Setttings";
 
 enum FileExtension {
   TXT = "TXT",
